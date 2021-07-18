@@ -14,18 +14,30 @@ NAME=localhost
 ######################
 # Create a Certificate Authority
 ######################
+
+# Generating password for private key encryption
+
+echo "Generating Random password ..."
+PASSWORD=$(date +%s | sha256sum | base64 | head -c 16)
+echo $PASSWORD | cat > ${ROOT}.pas
  
 # Generate private key
 echo "Generating CA root private key ..."
-openssl genrsa -des3 -out $ROOT.key 2048 -config ca.conf
+openssl genrsa -des3 -passout file:${ROOT}.pas -out $ROOT.key 2048 
 
 # Generate root certificate
 echo "Generating CA root certificate ..."
 openssl req -x509 -new -nodes -key $ROOT.key -sha256 -days 825 -out $ROOT.pem \
- -config ca.conf
+   -subj "/C=US/ST=NY/L=New York/O=Localhost CA, LLC/OU=Dev/CN=localhost.ca/emailAddress=admin@localhost.ca" \
+   -passin file:${ROOT}.pas \
+   -config ca.conf
 
+
+echo "###############################################"
+echo "File ${ROOT}.pas contains private key password"
 echo "Keep ${ROOT}.key in secret place, don't loose its password"
 echo "Add ${ROOT}.pem root certificate to System, and make it trusted"
+echo "###############################################"
 
 
 ######################
@@ -39,9 +51,10 @@ openssl genrsa -out $NAME.key 2048 -config certificate.conf
 
 # Create a certificate-signing request
 echo "Generating personal certificate signing request ..."
-openssl req -new -key $NAME.key -out $NAME.csr -config certificate.conf
+openssl req -new -key $NAME.key -out $NAME.csr -config certificate.conf \
+   -subj "/C=US/ST=NY/L=New York/O=Localhost CA, LLC/OU=Dev/CN=localhost.ca/emailAddress=admin@localhost.ca"
 
 # Create the signed certificate
 echo "Generating personal certificate ..."
-openssl x509 -req -in $NAME.csr -CA $ROOT.pem -CAkey $ROOT.key -CAcreateserial \
--out $NAME.pem -days 825 -sha256 -extfile certificate.conf
+openssl x509 -req -in $NAME.csr -CA $ROOT.pem -CAkey $ROOT.key -passin file:${ROOT}.pas -CAcreateserial \
+        -out $NAME.pem -days 825 -sha256 -extfile certificate.conf

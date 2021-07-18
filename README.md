@@ -20,12 +20,12 @@ or
 ```shell
 bash create.sh
 ```
-5. enter root CA key passphrase twice
-later you will be prompted twice for this passphrase, when script will generate root certificate and self-signed certificate
-6. answer all of scripts questions (or just press enter for default)
-7. script will generate files:
-* root.key - root CA key (needed to issue new personal certiciactes, passphrase protected, keep it secret)
+5. edit subj (if needed) 
+6. script will generate files:
+* root.key - root CA key (needed to issue new personal certificates, passphrase protected, keep it secret)
+* root.pas - a passphrase for root.key (keep it safe and secret)
 * root.pem - root CA certificate, it needs to be added to System, and make it trusted
+* root.srl - serial number of certificate
 * localhost.key - your personal key
 * localhost.pem - your personal certificate
 
@@ -33,5 +33,5 @@ later you will be prompted twice for this passphrase, when script will generate 
 
 remove root CA certificate and key, remove personal certificate, key
 ```shell
-rm *.key *.pem *.srl *.csr
+rm *.key *.pem *.srl *.csr *.pas
 ```
