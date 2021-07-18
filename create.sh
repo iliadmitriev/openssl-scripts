@@ -1,4 +1,4 @@
-!env bash
+#!env bash
 
 # exit on error
 set -e
