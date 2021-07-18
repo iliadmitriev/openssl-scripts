@@ -57,4 +57,4 @@ openssl req -new -key $NAME.key -out $NAME.csr -config certificate.conf \
 # Create the signed certificate
 echo "Generating personal certificate ..."
 openssl x509 -req -in $NAME.csr -CA $ROOT.pem -CAkey $ROOT.key -passin file:${ROOT}.pas -CAcreateserial \
-        -out $NAME.pem -days 825 -sha256 -extfile certificate.conf
+        -out $NAME.pem -days 825 -sha256 -extensions x509_ext -extfile certificate.conf
