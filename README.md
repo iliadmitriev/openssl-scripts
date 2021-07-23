@@ -30,6 +30,12 @@ bash create.sh
 * localhost.pem - your personal certificate
 
 
+## Check certificate chain
+
+```shell
+openssl verify -show_chain -CAfile root.pem localhost.pem
+```
+
 ## Check certificate authentication
 
 ### Server
