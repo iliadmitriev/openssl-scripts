@@ -16,18 +16,18 @@ chmod a+x create_ca.sh create_cert.sh
 ```shell
 ./create_ca.sh hello.com
 ```
-* root.key - root CA key (needed to issue new personal certificates, passphrase protected, keep it secret)
-* root.pas - a passphrase for root.key (keep it safe and secret)
-* root.pem - root CA certificate, it needs to be added to System, and make it trusted
-* root.srl - serial number of certificate
+* `root.key` - root CA key (needed to issue new personal certificates, passphrase protected, keep it secret)
+* `root.pas` - a passphrase for root.key (keep it safe and secret)
+* `root.pem` - root CA certificate, it needs to be added to System, and make it trusted
+* `root.srl` - serial number of certificate
 if you run script again previous versions of files will be overwritten
 4. add `root.pem` to your system trusted certificates
 5. create your personal certificate
 ```shell
 ./create_cert.sh hello-world.info
 ```
-* hello-world.info.key - your personal key
-* hello-world.info.pem - your personal certificate
+* `hello-world.info.key` - your personal key
+* `hello-world.info.pem` - your personal certificate
 
 
 ## Check certificate chain
