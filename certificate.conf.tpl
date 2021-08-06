@@ -44,8 +44,8 @@ subjectAltName = @alt_names
 
 
 [alt_names]
-DNS.1   = localhost
-DNS.2   = localhost.ca
+DNS.1   = ${CN}
+DNS.2   = localhost
 DNS.3   = localhost.tld
 DNS.4   = localhost.localdomain
 
