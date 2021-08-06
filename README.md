@@ -1,39 +1,39 @@
 # Self-signed certificate
 
 This script is written in bash and openssl based. Its purpose is creation of root Certificate Authority (CA)
-and self signed certificate
+and issue self-signed certificates
 
+Recommended version of openssl is 1.1.1
+For macOS it's better to use version from homebrew
 
 ## Usage
 1. checkout repository
 2. change permissions
 ```shell
-chmod a+x create.sh
+chmod a+x create_ca.sh create_cert.sh
 ```
-3. edit `certificate.conf` `[alt_names]` section
-set altenative dns names and ip addresses
-4. run script
+3. establish new CA, running script with specifying domain name of root CA
 ```shell
-./create.sh
+./create_ca.sh hello.com
 ```
-or
-```shell
-bash create.sh
-```
-5. edit subj (if needed) 
-6. script will generate files:
 * root.key - root CA key (needed to issue new personal certificates, passphrase protected, keep it secret)
 * root.pas - a passphrase for root.key (keep it safe and secret)
 * root.pem - root CA certificate, it needs to be added to System, and make it trusted
 * root.srl - serial number of certificate
-* localhost.key - your personal key
-* localhost.pem - your personal certificate
+if you run script again previous versions of files will be overwritten
+4. add `root.pem` to your system trusted certificates
+5. create your personal certificate
+```shell
+./create_cert.sh hello-world.info
+```
+* hello-world.info.key - your personal key
+* hello-world.info.pem - your personal certificate
 
 
 ## Check certificate chain
 
 ```shell
-openssl verify -show_chain -CAfile root.pem localhost.pem
+openssl verify -show_chain -CAfile root.pem hello-world.info.pem
 ```
 
 ## Check certificate authentication
@@ -41,17 +41,21 @@ openssl verify -show_chain -CAfile root.pem localhost.pem
 ### Server
 
 ```shell
-openssl s_server -accept 443 -cert localhost.pem -key localhost.key -CAfile root.pem -www -state -verify_return_error -Verify 1
+openssl s_server -accept 443 -cert hello-world.info.pem \
+    -key hello-world.info.key -CAfile root.pem \
+    -www -state -verify_return_error -Verify 1
 ```
 
 ### Client
 
 ```shell
-curl --cert localhost.pem --key localhost.key --cacert root.pem https://localhost:443/
+curl --cert hello-world.info.pem --key hello-world.info.key \
+      --cacert root.pem https://hello-world.info/
 ```
 or
 ```shell
-openssl s_client -key localhost.key -cert localhost.pem -CAfile root.pem -connect localhost:443  
+echo "GET / HTTP/1.1\n\r" | openssl s_client -key hello-world.info.key \
+  -cert hello-world.info.pem -CAfile root.pem -connect hello-world.info:443  
 ```
 
 ## Cleanup

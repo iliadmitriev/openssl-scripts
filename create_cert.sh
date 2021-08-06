@@ -31,7 +31,6 @@ conf_template=$(sed 's/\([^\\]\)"/\1\\"/g; s/^"/\\"/g' <<< "${conf_template}")
 # Create a certificate-signing request
 echo "Generating personal certificate signing request ..."
 ${OPENSSL} req -new -key $NAME.key -out $NAME.csr -config <(eval "echo \"${conf_template}\"") \
-   -addext "subjectAltName=DNS:${CN}" \
    -subj "/C=US/ST=NY/L=New York/O=Localhost CA, LLC/OU=Dev/CN=${CN}/emailAddress=admin@${CN}"
 
 # Create the signed certificate
