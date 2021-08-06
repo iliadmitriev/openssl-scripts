@@ -8,6 +8,16 @@ ROOT=root
 
 CN=${1:-"localhost.ca"}
 
+# protection against overwriting CA root
+[[ -f "root.key" || -f "root.pas" || -f "root.pem" ]] && {
+  echo "It looks like that you have already created CA root"
+  echo "To create it again you have to delete existing CA first"
+  echo "Use command"
+  echo "rm root.*"
+  echo ""
+  exit
+}
+
 ######################
 # Create a Certificate Authority
 ######################
