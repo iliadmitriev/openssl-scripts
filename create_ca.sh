@@ -3,14 +3,10 @@
 # exit on error
 set -e
 
-# Use your own domain name
-# domain for
 # ROOT - name for root CA key and certificate files
 ROOT=root
 
 CN=${1:-"localhost.ca"}
-EMAIL=${2:-"admin@localhost.ca"}
-
 
 ######################
 # Create a Certificate Authority
@@ -29,7 +25,7 @@ openssl genrsa -des3 -passout file:${ROOT}.pas -out $ROOT.key 2048
 # Generate root certificate
 echo "Generating CA root certificate ..."
 openssl req -x509 -new -nodes -key $ROOT.key -sha256 -days 825 -out $ROOT.pem \
-   -subj "/C=US/ST=NY/L=New York/O=Localhost CA, LLC/OU=Dev/CN=${CN}/emailAddress=${EMAIL}" \
+   -subj "/C=US/ST=NY/L=New York/O=Localhost CA, LLC/OU=Dev/CN=${CN}/emailAddress=admin@${CN}" \
    -passin file:${ROOT}.pas \
    -config ca.conf
 

@@ -6,7 +6,6 @@ set -e
 # where is your openssl resides
 OPENSSL=$(brew --prefix)/opt/openssl@1.1/bin/openssl
 
-# Use your own domain name
 # ROOT - name for root CA key and certificate files
 ROOT=root
 

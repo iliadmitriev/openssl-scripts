@@ -6,9 +6,9 @@ set -e
 # Use your own domain name
 # domain for
 # ROOT - name for root CA key and certificate files
-ROOT=root
+ROOT=root.gost
 # NAME - name for personal key, certificate-signing request and certificate files
-NAME=localhost
+NAME=localhost.gost
 OPENSSL=$(brew --prefix)/opt/openssl@1.1/bin/openssl
 
 $OPENSSL engine gost 2>&1 > /dev/null || { echo "openssl@1.1 with GOST 34.11 2012 is not installed" ; \
