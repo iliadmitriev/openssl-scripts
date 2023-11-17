@@ -5,3 +5,5 @@
 /*.pas
 .DS_Store
 /.idea
+*.jks
+*.req
