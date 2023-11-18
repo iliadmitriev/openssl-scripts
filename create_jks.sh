@@ -1,4 +1,4 @@
-# --------------- CA + keystore --------------------
+# --------------- CA + trustsore --------------------
 
 # generate CA key and root certificate
 # using create_ca.sh
@@ -32,7 +32,7 @@ keytool -import -noprompt -keystore ${NAME}.truststore.jks \
     -ext SAN:DNS:${HOSTNAME} \
     2>/dev/null
 
-# --------------- server --------------------
+# --------------- keystore --------------------
 
 # generate key
 keytool -genkey -noprompt -keystore ${NAME}.keystore.jks \
@@ -45,11 +45,27 @@ keytool -genkey -noprompt -keystore ${NAME}.keystore.jks \
 keytool -certreq -noprompt -keystore ${NAME}.keystore.jks \
     -storepass ${KEYSTORE_PASSWORD} -keypass ${KEY_PASSWORD} -storetype JKS \
     -alias localhost -file ${NAME}.cert.req \
+    -ext SubjectAlternativeName="DNS:${HOSTNAME}" \
+    -ext BasicConstraints=CA:false \
+    -ext KeyUsage=keyEncipherment,digitalSignature \
+    -ext ExtendedKeyUsage=clientAuth,serverAuth \
     2>/dev/null
+
+cat > ${NAME}.x509_v3_ext.cnf << _EOF_
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+extendedKeyUsage = serverAuth, clientAuth
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = ${HOSTNAME}
+_EOF_
 
 # sign server certificate
 openssl x509 -req -CA root.pem -CAkey root.key -in ${NAME}.cert.req \
-    -passin file:${ROOT}.pas -out ${NAME}.cert.pem -days 825 -CAcreateserial
+    -passin file:${ROOT}.pas -out ${NAME}.cert.pem -days 825 -CAcreateserial \
+    -extfile ${NAME}.x509_v3_ext.cnf
 
 # import CA root certificate signed certificate keystore to server keystore
 keytool -import -noprompt -keystore ${NAME}.keystore.jks \
@@ -60,3 +76,5 @@ keytool -import -noprompt -keystore ${NAME}.keystore.jks \
     -storepass ${KEYSTORE_PASSWORD} -keypass ${KEY_PASSWORD} \
     -storetype JKS -alias localhost -file ${NAME}.cert.pem \
     2>/dev/null
+
+rm ${NAME}.x509_v3_ext.cnf
