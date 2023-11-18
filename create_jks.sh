@@ -38,7 +38,7 @@ keytool -import -noprompt -keystore ${NAME}.truststore.jks \
 keytool -genkey -noprompt -keystore ${NAME}.keystore.jks \
     -storepass ${KEYSTORE_PASSWORD} -keypass ${KEY_PASSWORD} -storetype JKS \
     -alias localhost -keysize 2048 -validity 825 -keyalg RSA \
-    -dname "CN=${HOSTNAME}, OU=Dev, O=SBER, L=Moscow, ST=MSK, C=RU" \
+    -dname "CN=${HOSTNAME}, OU=Dev, O=ORG, L=Moscow, ST=MSK, C=RU" \
     2>/dev/null
 
 # generate certificate signing request
