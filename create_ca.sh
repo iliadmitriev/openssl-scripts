@@ -1,4 +1,4 @@
-#!env bash
+#!/usr/bin/env bash
 
 # exit on error
 set -e
@@ -26,15 +26,15 @@ CN=${1:-"localhost.ca"}
 
 echo "Generating Random password ..."
 PASSWORD=$(date +%s | sha256sum | base64 | head -c 16)
-echo $PASSWORD | cat > ${ROOT}.pas
+echo "$PASSWORD" | cat > "${ROOT}.pas"
  
 # Generate private key
 echo "Generating CA root private key ..."
-openssl genrsa -des3 -passout file:${ROOT}.pas -out $ROOT.key 2048 
+openssl genrsa -des3 -passout "file:${ROOT}.pas" -out $ROOT.key 2048 
 
 # Generate root certificate
 echo "Generating CA root certificate ..."
-openssl req -x509 -new -nodes -key $ROOT.key -sha256 -days 825 -out $ROOT.pem \
+openssl req -x509 -new -nodes -key "$ROOT.key" -sha256 -days 825 -out "$ROOT.pem" \
    -subj "/C=US/ST=NY/L=New York/O=Localhost CA, LLC/OU=Dev/CN=${CN}/emailAddress=admin@${CN}" \
    -passin file:${ROOT}.pas \
    -config ca.conf

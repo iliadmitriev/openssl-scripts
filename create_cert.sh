@@ -1,4 +1,4 @@
-#!env bash
+#!/usr/bin/env bash
 
 # exit on error
 set -e
@@ -22,7 +22,7 @@ NAME=${2:-${CN}}
 
 # Generate a private key
 # echo "Generating personal private key ..."
-${OPENSSL} genrsa -out $NAME.key 2048
+${OPENSSL} genrsa -out "$NAME.key" 2048
 
 # template for config file
 conf_template="$(cat certificate.conf.tpl)"
@@ -30,13 +30,13 @@ conf_template=$(sed 's/\([^\\]\)"/\1\\"/g; s/^"/\\"/g' <<< "${conf_template}")
 
 # Create a certificate-signing request
 echo "Generating personal certificate signing request ..."
-${OPENSSL} req -new -key $NAME.key -out $NAME.csr -config <(eval "echo \"${conf_template}\"") \
+${OPENSSL} req -new -key "$NAME.key" -out "$NAME.csr" -config <(eval "echo \"${conf_template}\"") \
    -subj "/C=US/ST=NY/L=New York/O=Localhost CA, LLC/OU=Dev/CN=${CN}/emailAddress=admin@${CN}"
 
 # Create the signed certificate
 echo "Generating personal certificate ..."
-${OPENSSL} x509 -req -in $NAME.csr -CA $ROOT.pem -CAkey $ROOT.key -passin file:${ROOT}.pas -CAcreateserial \
-  -out $NAME.pem -days 825 -sha256 \
+${OPENSSL} x509 -req -in "$NAME.csr" -CA "$ROOT.pem" -CAkey "$ROOT.key" -passin "file:${ROOT}.pas" -CAcreateserial \
+  -out "$NAME.pem" -days 825 -sha256 \
 	-extensions x509_ext -extfile  <(eval "echo \"${conf_template}\"")
 
 
