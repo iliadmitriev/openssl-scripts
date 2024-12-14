@@ -16,7 +16,7 @@ HOSTNAME=${2}
 
 TRUSTSTORE_PASSWORD=$(head -c 32 /dev/random | base64 | head -c 10)
 echo "$TRUSTSTORE_PASSWORD" | cat >"${NAME}.truststore.pas"
-echo "Generating keystore password to ${NAME}.keystore.pas ..."
+echo "Generating truststore password to ${NAME}.truststore.pas ..."
 
 KEYSTORE_PASSWORD=$(head -c 32 /dev/random | base64 | head -c 10)
 echo "$KEYSTORE_PASSWORD" | cat >"${NAME}.keystore.pas"
@@ -78,5 +78,17 @@ keytool -import -noprompt -keystore "${NAME}.keystore.jks" \
 	-storetype JKS -alias localhost -file "${NAME}.cert.pem" \
 	2>/dev/null
 
-rm "${NAME}.x509_v3_ext.cnf"
+# export keystore to PKCS12 and key to PEM
+keytool -importkeystore  \
+   -srckeystore "${NAME}.keystore.jks" \
+   -srcstorepass "${KEYSTORE_PASSWORD}" \
+   -srckeypass "${KEY_PASSWORD}" \
+   -srcalias localhost \
+   -destkeystore "${NAME}.p12" \
+   -deststorepass "${KEYSTORE_PASSWORD}" \
+   -deststoretype pkcs12 -noprompt
 
+openssl pkcs12 -in "${NAME}.p12" -nodes -noenc -nocerts -passin pass:"${KEYSTORE_PASSWORD}" > "${NAME}.key.pem"
+
+
+rm "${NAME}.x509_v3_ext.cnf"
