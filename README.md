@@ -56,7 +56,8 @@ openssl s_server -accept 443 -cert hello-world.info.pem \
 
 ```bash
 curl --cert hello-world.info.pem --key hello-world.info.key \
-      --cacert root.pem https://hello-world.info/
+      --cacert root.pem --resolve hello-world.info:443:127.0.0.1 \
+      --url https://hello-world.info:443/
 ```
 
 or
