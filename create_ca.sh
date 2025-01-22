@@ -3,6 +3,8 @@
 # exit on error
 set -e
 
+OPENSSL_EXEC=openssl
+
 # ROOT - name for root CA key and certificate files
 ROOT=root
 
@@ -25,16 +27,16 @@ CN=${1:-"localhost.ca"}
 # Generating password for private key encryption
 
 echo "Generating Random password ..."
-PASSWORD=$(date +%s | sha256sum | base64 | head -c 16)
+PASSWORD=$(date +%s | shasum -a 256 | base64 | head -c 16)
 echo "$PASSWORD" | cat > "${ROOT}.pas"
  
 # Generate private key
 echo "Generating CA root private key ..."
-openssl genrsa -des3 -passout "file:${ROOT}.pas" -out $ROOT.key 2048 
+${OPENSSL_EXEC} genrsa -des3 -passout "file:${ROOT}.pas" -out $ROOT.key 2048 
 
 # Generate root certificate
 echo "Generating CA root certificate ..."
-openssl req -x509 -new -nodes -key "$ROOT.key" -sha256 -days 825 -out "$ROOT.pem" \
+${OPENSSL_EXEC} req -x509 -new -nodes -key "$ROOT.key" -sha256 -days 825 -out "$ROOT.pem" \
    -subj "/C=US/ST=NY/L=New York/O=Localhost CA, LLC/OU=Dev/CN=${CN}/emailAddress=admin@${CN}" \
    -passin file:${ROOT}.pas \
    -config ca.conf
